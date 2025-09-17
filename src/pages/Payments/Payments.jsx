@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getRangeData, appendRow } from '../../api/googleSheetsService';
+import { getRangeData, appendRow, deleteRow } from '../../api/googleSheetsService';
 import { useData } from '../../context/DataContext';
 import { formatDateForSheet } from '../../utils/helpers';
 import Spinner from '../../components/common/Spinner';
@@ -10,7 +10,12 @@ import 'flatpickr/dist/themes/material_green.css';
 import '../../assets/styles/CrudPage.css';
 import './Payments.css';
 
+const PAYMENTS_SHEET_NAME = 'Payments';
 const PAYMENTS_RANGE = 'RANGEPAYMENTS';
+
+const findRowIndex = (data, trxId) => {
+    return data.findIndex(row => row['Trx ID'] === trxId) + 2;
+};
 
 const Payments = () => { 
     const { suppliers, dimensions, refreshData } = useData();
@@ -22,7 +27,6 @@ const Payments = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPayment, setNewPayment] = useState({});
 
-    // --- NEW STATE for filtering and searching ---
     const [filterColumn, setFilterColumn] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -52,7 +56,6 @@ const Payments = () => {
         fetchData();
     }, []);
 
-    // --- NEW Filtering Logic ---
     const filteredPayments = useMemo(() => {
         if (!searchTerm) return payments;
         return payments.filter(payment => {
@@ -71,7 +74,7 @@ const Payments = () => {
     const handleCloseModal = () => setIsModalOpen(false);
 
     const generateTrxId = () => {
-        const newId = 'PT' + Math.floor(56789 + Math.random() * 10000); // Matches screenshot format
+        const newId = 'PT' + Math.floor(56789 + Math.random() * 10000);
         setNewPayment(prev => ({ ...prev, 'Trx ID': newId }));
     };
 
@@ -136,13 +139,28 @@ const Payments = () => {
         }
     };
     
-    // --- NEW: Placeholders for Edit/Delete ---
     const handleEditPayment = (trxId) => {
         alert(`Editing functionality for transaction ${trxId} is not yet implemented.`);
     };
 
-    const handleDeletePayment = (trxId) => {
-        alert(`Deleting functionality for transaction ${trxId} is not yet implemented.`);
+    const handleDeletePayment = async (trxId) => {
+        if (window.confirm('Are you sure you want to delete this payment? This action is permanent.')) {
+            setLoading(true);
+            try {
+                const rowIndex = findRowIndex(payments, trxId);
+                if (rowIndex < 2) throw new Error("Could not find payment to delete.");
+
+                await deleteRow(PAYMENTS_SHEET_NAME, rowIndex);
+                await fetchData();
+                await refreshData();
+                alert("Payment deleted successfully. The related balances will be recalculated.");
+            } catch (err) {
+                setError(err.message);
+                alert(`Error: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     const supplierOptions = suppliers.map(s => ({ value: s['Supplier ID'], label: s['Supplier Name'] }));
@@ -156,13 +174,11 @@ const Payments = () => {
     return (
         <div className="crud-container">
             {loading && <Spinner />}
-            {/* --- UPDATED Header --- */}
             <div className="crud-header">
                 <h1>Payments Module</h1>
                 <p>Create Payments Against Purchase Orders</p>
             </div>
             
-             {/* --- REBUILT Action Bar --- */}
              <div className="action-bar">
                 <div className="action-bar-left">
                     <button className="btn btn-primary" onClick={handleOpenModal}>
@@ -195,7 +211,6 @@ const Payments = () => {
 
             <div className="table-container">
                 <table className="crud-table">
-                     {/* --- UPDATED Table Headers --- */}
                      <thead>
                         <tr>
                             <th>Trx Date</th><th>Trx ID</th><th>Supplier ID</th><th>Supplier Name</th>
@@ -204,7 +219,6 @@ const Payments = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* --- Use filteredPayments and new columns --- */}
                         {filteredPayments.length > 0 ? filteredPayments.map((p, index) => (
                             <tr key={p['Trx ID'] || index}>
                                 <td>{p['Trx Date']}</td>
@@ -218,8 +232,8 @@ const Payments = () => {
                                 <td>{p['PMT Mode']}</td>
                                 <td>${parseFloat(p['Amount Paid'] || 0).toFixed(2)}</td>
                                 <td className="action-cell">
-                                    <button className="btn btn-primary" onClick={() => handleEditPayment(p['Trx ID'])}>Edit</button>
-                                    <button className="btn btn-outline" onClick={() => handleDeletePayment(p['Trx ID'])}>Delete</button>
+                                    <button className="action-btn edit-btn" onClick={() => handleEditPayment(p['Trx ID'])}><i className="fas fa-edit"></i></button>
+                                    <button className="action-btn delete-btn" onClick={() => handleDeletePayment(p['Trx ID'])}><i className="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         )) : <tr><td colSpan="11" className="no-data">No payments found.</td></tr>}

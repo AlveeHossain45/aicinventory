@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getRangeData, appendRow } from '../../api/googleSheetsService';
+import { getRangeData, appendRow, deleteRow } from '../../api/googleSheetsService';
 import { useData } from '../../context/DataContext';
 import { formatDateForSheet } from '../../utils/helpers';
 import Spinner from '../../components/common/Spinner';
@@ -9,7 +9,12 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/material_green.css';
 import '../../assets/styles/CrudPage.css';
 
+const RECEIPTS_SHEET_NAME = 'Receipts';
 const RECEIPTS_RANGE = 'RANGERECEIPTS';
+
+const findRowIndex = (data, trxId) => {
+    return data.findIndex(row => row['Trx ID'] === trxId) + 2;
+};
 
 const Receipts = () => {
     const { customers, dimensions, refreshData } = useData();
@@ -21,7 +26,6 @@ const Receipts = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newReceipt, setNewReceipt] = useState({});
 
-    // --- NEW STATE for filtering and searching ---
     const [filterColumn, setFilterColumn] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -51,7 +55,6 @@ const Receipts = () => {
         fetchData();
     }, []);
     
-    // --- NEW Filtering Logic ---
     const filteredReceipts = useMemo(() => {
         if (!searchTerm) return receipts;
         return receipts.filter(receipt => {
@@ -70,7 +73,7 @@ const Receipts = () => {
     const handleCloseModal = () => setIsModalOpen(false);
 
     const generateTrxId = () => {
-        const newId = 'RT' + Math.floor(12345 + Math.random() * 90000); // Format matches screenshot
+        const newId = 'RT' + Math.floor(12345 + Math.random() * 90000);
         setNewReceipt(prev => ({ ...prev, 'Trx ID': newId }));
     };
 
@@ -135,13 +138,28 @@ const Receipts = () => {
         }
     };
     
-    // --- NEW: Placeholders for Edit/Delete ---
     const handleEditReceipt = (trxId) => {
         alert(`Editing functionality for transaction ${trxId} is not yet implemented.`);
     };
 
-    const handleDeleteReceipt = (trxId) => {
-        alert(`Deleting functionality for transaction ${trxId} is not yet implemented.`);
+    const handleDeleteReceipt = async (trxId) => {
+        if (window.confirm('Are you sure you want to delete this receipt? This action is permanent.')) {
+            setLoading(true);
+            try {
+                const rowIndex = findRowIndex(receipts, trxId);
+                if (rowIndex < 2) throw new Error("Could not find receipt to delete.");
+                
+                await deleteRow(RECEIPTS_SHEET_NAME, rowIndex);
+                await fetchData();
+                await refreshData();
+                alert("Receipt deleted successfully. The related balances will be recalculated.");
+            } catch (err) {
+                setError(err.message);
+                alert(`Error: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
     };
     
     const customerOptions = customers.map(c => ({ value: c['Customer ID'], label: c['Customer Name'] }));
@@ -149,16 +167,17 @@ const Receipts = () => {
         .filter(so => so['Customer ID'] === newReceipt['Customer ID'])
         .map(so => ({ value: so['SO ID'], label: `${so['SO ID']} (Bal: $${parseFloat(so['SO Balance']||0).toFixed(2)})` }));
 
+    if (loading && !isModalOpen) return <Spinner />;
+    if (error) return <div className="error-message">Error: {error}</div>;
+    
     return (
         <div className="crud-container">
             {loading && <Spinner />}
-            {/* --- UPDATED Header --- */}
             <div className="crud-header">
                 <h1>Cash and Bank Module</h1>
                 <p>Create Receipts and Payments</p>
             </div>
             
-            {/* --- REBUILT Action Bar --- */}
             <div className="action-bar">
                 <div className="action-bar-left">
                     <button className="btn btn-primary" onClick={handleOpenModal}>
@@ -191,7 +210,6 @@ const Receipts = () => {
 
             <div className="table-container">
                 <table className="crud-table">
-                    {/* --- UPDATED Table Headers --- */}
                     <thead>
                         <tr>
                             <th>Trx Date</th><th>Trx ID</th><th>Customer ID</th><th>Customer Name</th>
@@ -200,7 +218,6 @@ const Receipts = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* --- Use filteredReceipts and new columns --- */}
                         {filteredReceipts.length > 0 ? filteredReceipts.map((r, index) => (
                             <tr key={r['Trx ID'] || index}>
                                 <td>{r['Trx Date']}</td>
@@ -214,8 +231,8 @@ const Receipts = () => {
                                 <td>{r['PMT Mode']}</td>
                                 <td>${parseFloat(r['Amount Received'] || 0).toFixed(2)}</td>
                                 <td className="action-cell">
-                                    <button className="btn btn-primary" onClick={() => handleEditReceipt(r['Trx ID'])}>Edit</button>
-                                    <button className="btn btn-outline" onClick={() => handleDeleteReceipt(r['Trx ID'])}>Delete</button>
+                                    <button className="action-btn edit-btn" onClick={() => handleEditReceipt(r['Trx ID'])}><i className="fas fa-edit"></i></button>
+                                    <button className="action-btn delete-btn" onClick={() => handleDeleteReceipt(r['Trx ID'])}><i className="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         )) : <tr><td colSpan="11" className="no-data">No receipts found.</td></tr>}

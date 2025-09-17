@@ -63,12 +63,6 @@ const Users = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Generate a unique UserID
-    const generateUserId = () => {
-        const newId = "U" + Math.floor(1000 + Math.random() * 9000);
-        setFormData(prev => ({ ...prev, 'UserID': newId }));
-    };
-
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -80,12 +74,22 @@ const Users = () => {
         setLoading(true);
         try {
             if (editingUser) {
-                // --- UPDATE LOGIC (Placeholder) ---
-                // This is more complex as it requires finding the exact row
-                alert("Update functionality is not yet implemented.");
-                // const rowIndex = findRowIndex(users, editingUser['UserID']);
-                // const values = [formData.UserID, formData.Name, formData.Email, formData.Role, formData.Status, editingUser['Date Added']];
-                // await updateRow(`${USERS_SHEET_NAME}!A${rowIndex}`, values);
+                // --- UPDATE LOGIC (FIXED) ---
+                const rowIndex = findRowIndex(users, editingUser['UserID']);
+                if (rowIndex < 2) throw new Error("Could not find the user to update.");
+
+                // The order must match your Google Sheet columns
+                const values = [
+                    formData.UserID, 
+                    formData.Name, 
+                    formData.Email, 
+                    formData.Role, 
+                    formData.Status, 
+                    editingUser['Date Added'] // Keep original date
+                ];
+                
+                const rangeToUpdate = `${USERS_SHEET_NAME}!A${rowIndex}:F${rowIndex}`;
+                await updateRow(rangeToUpdate, values);
 
             } else {
                 // --- ADD NEW USER LOGIC ---
@@ -112,14 +116,23 @@ const Users = () => {
         }
     };
 
-    const handleDelete = (userId) => {
-        alert(`Delete functionality for user ${userId} is not implemented yet.`);
-        // --- DELETE LOGIC (Placeholder) ---
-        // if (window.confirm('Are you sure you want to delete this user?')) {
-        //     const rowIndex = findRowIndex(users, userId);
-        //     await deleteRow(USERS_SHEET_NAME, rowIndex);
-        //     fetchUsers();
-        // }
+    const handleDelete = async (userId) => {
+        // --- DELETE LOGIC (IMPLEMENTED) ---
+        if (window.confirm('Are you sure you want to delete this user?')) {
+            setLoading(true);
+            try {
+                const rowIndex = findRowIndex(users, userId);
+                if (rowIndex < 2) throw new Error("Could not find user to delete.");
+                
+                await deleteRow(USERS_SHEET_NAME, rowIndex);
+                await fetchUsers();
+            } catch (err) {
+                 setError(err.message);
+                 alert(`Error: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     if (loading && !isModalOpen) return <Spinner />;
