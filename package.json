@@ -1,6 +1,5 @@
 {
   "name": "aic-inventory-app",
-  "homepage": "https://SamiSahil.github.io/aicinventory",
   "private": true,
   "version": "0.0.0",
   "type": "module",
