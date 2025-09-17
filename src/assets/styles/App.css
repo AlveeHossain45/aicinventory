@@ -1,0 +1,16 @@
+/* Dark Theme Variables */
+body[data-theme='dark'] {
+  --sidebar-bg: #1e272e;
+  --topbar-bg: #2c3a47;
+  --app-bg: #34495e;
+  --card-bg: #2c3a47;
+
+  --text-dark: #ecf0f1;
+  --secondary: #95a5a6;
+  --border-color: #4a637a;
+}
+
+/* Ensure dark mode transitions smoothly */
+body, .settings-card, .form-control, .sidebar, .top-bar, .crud-container {
+    transition: background-color 0.3s, color 0.3s;
+}

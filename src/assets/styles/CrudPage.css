@@ -1,0 +1,194 @@
+.crud-container {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.crud-header {
+    margin-bottom: 25px;
+}
+
+.crud-header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+}
+
+.crud-header p {
+    color: var(--secondary);
+    font-size: 1rem;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: space-between; /* This is key for left/right alignment */
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    gap: 15px;
+}
+
+.action-bar-left, .action-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-primary { background-color: var(--success); }
+.btn-primary:hover { background-color: var(--success-hover); }
+
+.btn-info { background-color: var(--primary); } /* Matched to screenshot */
+.btn-info:hover { filter: brightness(90%); }
+
+.btn-secondary { background-color: var(--secondary); }
+.btn-secondary:hover { background-color: var(--secondary-hover); }
+
+.btn-outline {
+    background-color: white;
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+.btn-outline:hover {
+    background-color: #f8f9fa;
+}
+
+
+/* NEW Styles for Search and Filter */
+.filter-select, .search-input {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+    font-size: 0.9rem;
+    height: 42px; /* Match button height */
+}
+
+.search-input {
+    width: 250px;
+}
+.search-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+
+.table-container {
+    overflow-x: auto;
+}
+
+.crud-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    font-size: 0.9rem;
+}
+
+.crud-table th {
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+    padding: 14px 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.crud-table td {
+    padding: 14px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: #555;
+    white-space: nowrap;
+}
+
+.crud-table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.action-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: white;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.edit-btn { background-color: var(--primary); }
+.delete-btn { background-color: var(--danger); }
+
+/* Updated Status Style to match screenshot */
+.status {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.status-yes { background-color: #ffc107; color: #333}
+.status-no { background-color: #d4edda; color: #155724; } /* Light green like screenshot */
+.status-paid, .status-received { background-color: var(--success); }
+.status-partial-receipt, .status-partial-payment { background-color: var(--info); }
+
+
+.no-data {
+    text-align: center;
+    padding: 50px;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .action-bar-right {
+        justify-content: flex-start;
+    }
+}
+@media (max-width: 768px) {
+    .search-input {
+        width: 100%;
+    }
+}
+.status-active {
+    background-color: var(--success); /* Green */
+    color: white;
+}
+.status-inactive {
+    background-color: var(--secondary); /* Gray */
+    color: white;
+}

@@ -1,0 +1,78 @@
+/* Top Bar Styles */
+.top-bar {
+  background: #ffffff;
+  padding: 10px 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.top-bar-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-bar-links a {
+  font-size: 1.1rem;
+  color: #34495e;
+  transition: all 0.3s;
+  padding: 8px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-bar-links a:hover {
+  background: #f0f0f0;
+  color: #1abc9c;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.user-name {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: #34495e;
+}
+
+/* --- ADD THE FOLLOWING NEW STYLES --- */
+
+.menu-toggle {
+    display: none; /* Hidden on desktop */
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #34495e;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.top-bar {
+  /* This ensures the toggle is on the left and links are on the right */
+  justify-content: space-between; 
+}
+
+@media (max-width: 480px) {
+    .menu-toggle {
+        display: block; /* Show the button on mobile */
+    }
+}

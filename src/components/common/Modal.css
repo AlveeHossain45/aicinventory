@@ -1,0 +1,103 @@
+.modal-overlay {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-md { width: 500px; max-width: 95%; }
+.modal-lg { width: 800px; max-width: 95%; }
+.modal-xl { width: 1200px; max-width: 95%; }
+
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.modal-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.close-btn {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: color 0.3s;
+}
+.close-btn:hover {
+    color: #2c3e50;
+}
+
+.modal-body {
+    flex-grow: 1;
+}
+.modal-body .form-group {
+    margin-bottom: 20px;
+}
+.modal-body .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+.modal-body .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-family: 'Roboto', sans-serif;
+}
+.modal-body .form-control:focus {
+    border-color: #1abc9c;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+}
+.required:after {
+    content: " *";
+    color: #e74c3c;
+}
+.id-generate {
+    display: flex;
+    gap: 10px;
+}
+.id-field {
+    flex: 1;
+}
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #ecf0f1;
+}
+
+/* For react-select dropdowns inside modals */
+.form-group .css-b62m3t-container {
+    width: 100%;
+}

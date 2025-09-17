@@ -1,0 +1,59 @@
+/* src/components/layout/Layout.css */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f7fa;
+    /* Add a transition for the padding change */
+    transition: padding-left 0.3s ease-in-out;
+    
+    /* DESKTOP: Default padding to match the full sidebar width */
+    padding-left: 260px; 
+}
+
+.content-area {
+    padding: 30px;
+    flex: 1;
+}
+
+/* TABLET: Adjust padding for the collapsed icon-only sidebar */
+@media (max-width: 768px) {
+    .main-content {
+        padding-left: 80px;
+    }
+}
+
+/* MOBILE: Remove padding as the sidebar will be off-canvas */
+@media (max-width: 480px) {
+    .main-content {
+        padding-left: 0;
+    }
+}
+
+/* --- OVERLAY FOR OFF-CANVAS MENU --- */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+@media (min-width: 481px) {
+    .sidebar-overlay {
+        display: none !important; 
+    }
+}
